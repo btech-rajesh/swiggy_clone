@@ -1,27 +1,34 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-
-//crete slice have 3 parts: name, initialState, reducers
-//cartSlice k andr action and reducer store huye and ise m s export krenge
-const cartSlice=createSlice({
-    name:"cart",
-    initialState:{
-        items:[],
+const cartSclice=createSlice({
+  name: "cart",
+  initialState: {
+    items: [],
+    totalItems: 0,
+    totalPrice: 0,
+  },
+  reducers: {
+    addItem:(state, action)=>{
+        
+        state.items.push(action.payload);
     },
+    removeItem:(state, action)=>{
+      console.log("Removing item with ID:", action.payload);
+      
+        const index = state.items.findIndex(item => item.info.id === action.payload);
+        if (index !== -1) {
+            state.items.splice(index, 1);
+        } else {
+            console.warn(`Item with ID ${action.payload} not found in cart.`);
+        }
 
-    // we write in this action k coresponding reducer function(have acces-state(i can acces intial state or first value),action-ke coresponds reducer funcc)
-    reducers:{
-        addItem: (state,action)=>{
-            state.items.push(action.payload); //action.payload is the foodItem we get from RestaurantDetails.jsx
-        },
-        removeItem: (state,action)=>{
-            state.items.pop(); //this will remove the last item from the cart
-        },
-        resetCart:(state,action)=>{
-            state.items.length=0; //this will reset the cart by making the length of items array 0
-        },
+    },
+    clearCart:(state)=>{
+        state.items=[];
     }
-})
+  
+  },
+});
 
-export const {addItem,removeItem,resetCart} = cartSlice.actions;
-export default cartSlice.reducer;
+ export const { addItem, removeItem, clearCart } = cartSclice.actions;
+ export default cartSclice.reducer;

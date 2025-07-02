@@ -1,15 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import cartReducer from "./cartSlice";
-
-// import { userReducer } from 'react';
-
+import cartReducer from './cartSlice';
 
 const appStore = configureStore({
-    reducer:{
-       cart:cartReducer,
-        // user:userReducer
-    }
+    reducer: {
+        cart:cartReducer,
+    },
 });
 
 export default appStore;
-// This code sets up a Redux store using the `configureStore` function from Redux Toolkit.

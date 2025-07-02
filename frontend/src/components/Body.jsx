@@ -1,61 +1,85 @@
 import { useEffect, useState } from "react";
-import ApiCalling from "./ApiCalling"
+import APIcalling from "./APIcalling";
 import RestaurantCard from "./RestaurantCard";
+import Search from "./Search";
 
 function Body() {
+  const restArray = APIcalling();
 
-    const restArr = ApiCalling();//from here we get api data 
-    //in this we set the reset functionality for the reset button
-     
-const [allResetArr, setAllResetArr] = useState(restArr);
-// console.log(allResetArr ,"allResetArr");
-const [IsActive1,setIsActive1]=useState(false);
-const [IsActive2,setIsActive2]=useState(false);
+  const [restaurantData, setRestaurantData] = useState([]);
+  const [activeRating, setActiveRating] = useState(null);
 
+  useEffect(() => {
+    if (restArray && restArray.length > 0) {
+      setRestaurantData(restArray);
+    }
+  }, [restArray]);
 
-useEffect(function() {
-  if(restArr && restArr.length) {
-    setAllResetArr(restArr);
-  }
-}, [restArr]);  
+  const ChangeRating = (rating) => {
+    if (restArray) {
+      const filteredData = restArray.filter(
+        (restaurant) => restaurant.info.avgRating >= rating
+      );
+      setRestaurantData(filteredData);
+      setActiveRating(rating);
+    }
+  };
 
+  const resetFilter = () => {
+    if (restArray) {
+      setRestaurantData(restArray);
+      setActiveRating(null);
+    }
+  };
 
-const handleReset= () => {
-  setAllResetArr(restArr);
-  setIsActive1(false);
-  setIsActive2(true);
-};
+  const getButtonClass = (rating) => {
+    const baseClasses = "border rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ease-in-out hover:scale-105";
+    const activeClasses = "bg-green-600 text-white shadow-md"; 
+    return `${baseClasses} ${activeRating === rating ? activeClasses : "bg-gray-100 text-gray-800 hover:bg-gray-200"}`;
+  };
 
+ 
 
-const handleRating = () => {
-  //set the data of api of restArr using filter method
-  const updatedArr = restArr.filter((restaurantdetails) => restaurantdetails.info.avgRating >= 4.5);
-  setAllResetArr(updatedArr);
-  setIsActive1(true);
-  setIsActive2(false);
-};
-const searchData = (e) => {
-  const searchText = e.target.value.toLowerCase();
-  const filteredArr = allResetArr.filter((restaurantdetails) =>
-    restaurantdetails.info.name.toLowerCase().includes(searchText)
+  return (
+    <div className="p-5">
+      <h1 className="font-bold text-2xl mb-4">
+        Restaurants with online food delivery in Mathura
+      </h1>
+      <div className="flex flex-wrap gap-3 mb-6"> 
+        <button
+          className={getButtonClass(4.5)}
+          onClick={() => ChangeRating(4.5)}
+        >
+          ⭐ 4.5+ Rating
+        </button>
+
+        <button
+          className={getButtonClass(4)}
+          onClick={() => ChangeRating(4)}
+        >
+          ⭐ 4.0+ Rating
+        </button>
+
+        <button
+          className={getButtonClass(3)}
+          onClick={() => ChangeRating(3)}
+        >
+          ⭐ 3.0+ Rating
+        </button>
+
+        <button
+          className={`border rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ease-in-out hover:scale-105 ${activeRating === null ? "bg-red-500 text-white shadow-md" : "bg-gray-100 text-gray-800 hover:bg-gray-200"}`}
+          onClick={resetFilter}
+        >
+          Clear All Filters
+        </button>
+       <Search restArray={restArray} setActiveRating={setActiveRating} setRestaurantData={setRestaurantData}/>
+      </div>
+      
+        <RestaurantCard restArray={restaurantData} />
+      
+    </div>
   );
-  setAllResetArr(filteredArr);
-  setIsActive1(false);
-  setIsActive2(false);
-};
-
-return (
-  <div className="ml-20 mt-4">
-    <h1 className="text-2xl">Restaurants with online food delivery in Aligarh</h1>
-    <button className={IsActive1 ? "border bg-green-500 rounded-2xl p-2 mx-4" : "border rounded-2xl p-2 mx-4 bg-gray-200"} onClick={handleRating}>Ratings 4.5+</button>
-    <button className={IsActive2 ? "border bg-green-500 rounded-2xl p-2 mx-4" : "border rounded-2xl p-2 mx-4 bg-gray-200"} onClick={handleReset}>Reset</button>
-    <input className="border rounded-2xl p-2 mx-4" type="text" placeholder="Search Restaurants" onChange={searchData} />
-
-    <div className="mx-auto">
-      <RestaurantCard restArr={allResetArr} />
-    </div>
-    </div>
-  )
 }
 
-export default Body
+export default Body;
